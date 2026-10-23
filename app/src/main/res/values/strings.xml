@@ -1052,6 +1052,9 @@
     <string name="content_rom_gone">That game is no longer in the ROMs folder.</string>
     <string name="content_desktop_system">Desktop · %1$s</string>
     <string name="content_launch_in">Launch in %1$s</string>
+    <string name="cemu_pro_controller_title">Use Wii U Pro Controller</string>
+    <string name="cemu_pro_controller_pro">Slot 1: Wii U Pro Controller</string>
+    <string name="cemu_pro_controller_gamepad">Slot 1: Wii U GamePad (Default)</string>
     <string name="content_also_in">Also in %1$s</string>
     <string name="content_page_gone">That page is gone. Pick a section on the left.</string>
     <string name="content_open_desktop">Open desktop</string>

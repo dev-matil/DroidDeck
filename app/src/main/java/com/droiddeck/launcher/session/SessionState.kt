@@ -55,6 +55,8 @@ object SessionState {
     @Volatile
     var program: String? = null
     @Volatile
+    var cemuProController = false
+    @Volatile
     var programArgs: List<String> = emptyList()
     @Volatile
     var steamUi: String? = null

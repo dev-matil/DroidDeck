@@ -889,7 +889,11 @@ class FrontEndActivity : ComponentActivity() {
                             startSession(Intent(this, SessionActivity::class.java)
                                 .putExtra(SessionService.EXTRA_MODE, SessionService.MODE_DESKTOP))
                         },
-                        onEmulator = { e -> launchProgram(e.program) },
+                        onEmulator = { e ->
+                            launchProgram(e.program, if (e.id == "cemu")
+                                com.droiddeck.launcher.frontend.CemuControllerPrefs.get(this, com.droiddeck.launcher.frontend.CemuControllerPrefs.LAUNCHER_KEY)
+                            else null)
+                        },
                         onUserApp = { app ->
                             app.args.firstOrNull()?.let { Library.flatpakNames[it] = app.name }
                             startActivity(Intent(this, SessionActivity::class.java)
@@ -906,10 +910,18 @@ class FrontEndActivity : ComponentActivity() {
                         },
                         onRom = { g ->
                             val e = emulatorList.first { it.id == g.emulatorId }
-                            startActivity(Intent(this, SessionActivity::class.java)
+                            val launch = Intent(this, SessionActivity::class.java)
                                 .putExtra(SessionService.EXTRA_MODE, SessionService.MODE_RUN)
                                 .putExtra(SessionService.EXTRA_PROGRAM, e.program)
-                                .putExtra(SessionService.EXTRA_PROGRAM_ARGS, Library.launchArgs(e.id, g.guestPath).toTypedArray()))
+                                .putExtra(SessionService.EXTRA_PROGRAM_ARGS, Library.launchArgs(e.id, g.guestPath).toTypedArray())
+                            if (e.id == "cemu") launch.putExtra(
+                                SessionService.EXTRA_CEMU_PRO_CONTROLLER,
+                                com.droiddeck.launcher.frontend.CemuControllerPrefs.get(
+                                    this,
+                                    com.droiddeck.launcher.frontend.CemuControllerPrefs.gameKey(g.hostPath),
+                                ),
+                            )
+                            startActivity(launch)
                         },
                         onResume = { startActivity(Intent(this, SessionActivity::class.java)) },
                         onSteamSettings = { loadModeSettings(SessionService.MODE_STEAM) },
@@ -1547,10 +1559,12 @@ class FrontEndActivity : ComponentActivity() {
         desktopPresent = DesktopCatalog.desktopPresent(this)
     }
 
-    private fun launchProgram(path: String) {
-        startActivity(Intent(this, SessionActivity::class.java)
+    private fun launchProgram(path: String, cemuProController: Boolean? = null) {
+        val intent = Intent(this, SessionActivity::class.java)
             .putExtra(SessionService.EXTRA_MODE, SessionService.MODE_RUN)
-            .putExtra(SessionService.EXTRA_PROGRAM, path))
+            .putExtra(SessionService.EXTRA_PROGRAM, path)
+        cemuProController?.let { intent.putExtra(SessionService.EXTRA_CEMU_PRO_CONTROLLER, it) }
+        startActivity(intent)
     }
 
     private fun resumeInterruptedPackages() {

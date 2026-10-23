@@ -1000,6 +1000,9 @@
     <string name="content_rom_gone">Dieses Spiel ist nicht mehr im ROMs-Ordner.</string>
     <string name="content_desktop_system">Desktop · %1$s</string>
     <string name="content_launch_in">In %1$s starten</string>
+    <string name="cemu_pro_controller_title">Wii U Pro Controller verwenden</string>
+    <string name="cemu_pro_controller_pro">Slot 1: Wii U Pro Controller</string>
+    <string name="cemu_pro_controller_gamepad">Slot 1: Wii U GamePad (Standard)</string>
     <string name="content_also_in">Auch in %1$s</string>
     <string name="content_page_gone">Diese Seite gibt es nicht mehr. Wähle links einen Bereich.</string>
     <string name="content_open_desktop">Desktop öffnen</string>

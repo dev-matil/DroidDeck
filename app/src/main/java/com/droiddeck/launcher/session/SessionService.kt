@@ -334,6 +334,7 @@ class SessionService : Service() {
         SessionState.pipActive = false
         pipTask = false
         SessionState.program = intent?.getStringExtra(EXTRA_PROGRAM)
+        SessionState.cemuProController = intent?.getBooleanExtra(EXTRA_CEMU_PRO_CONTROLLER, false) ?: false
         SessionState.programArgs = intent?.getStringArrayExtra(EXTRA_PROGRAM_ARGS)?.toList().orEmpty()
         SessionState.steamUi = intent?.getStringExtra(EXTRA_STEAM_UI)
         SessionState.steamUrl = intent?.getStringExtra(EXTRA_STEAM_URL)
@@ -668,6 +669,9 @@ class SessionService : Service() {
         guest.add("PATH=/usr/local/bin:/usr/bin:/bin")
         guest.add("TERM=xterm-256color")
         guest.add("LANG=C.UTF-8")
+        if (SessionState.mode == MODE_RUN && SessionState.program == "/opt/appimages/cemu.AppImage") {
+            guest.add("DROIDDECK_CEMU_PRO_CONTROLLER=" + if (SessionState.cemuProController) "1" else "0")
+        }
         guest.add("BL_STEAM_LANGUAGE=" + SteamLanguage.forLocale(
             com.droiddeck.launcher.core.AppLanguage.effective(this),
             com.droiddeck.launcher.core.AppLanguage.system(this).country,
@@ -1971,6 +1975,7 @@ class SessionService : Service() {
         const val EXTRA_PROGRAM = "program"
         private const val RUN_STATUS = "run-status"
         const val EXTRA_PROGRAM_ARGS = "programArgs"
+        const val EXTRA_CEMU_PRO_CONTROLLER = "cemuProController"
         const val EXTRA_STEAM_UI = "steamUi"
         const val EXTRA_STEAM_URL = "steamUrl"
         const val EXTRA_GAME_ID = "gameId"

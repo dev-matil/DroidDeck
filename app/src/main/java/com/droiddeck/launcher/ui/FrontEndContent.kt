@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -65,6 +66,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -94,6 +96,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.droiddeck.launcher.HomeApp
 import com.droiddeck.launcher.R
+import com.droiddeck.launcher.frontend.CemuControllerPrefs
 import com.droiddeck.launcher.frontend.Library
 import com.droiddeck.launcher.runtime.UserApps
 import com.droiddeck.launcher.store.UserAppsState
@@ -322,6 +325,9 @@ private fun Content(
                                 ) { a.onRemovePackage(pkg.id) }
                             }
                         }
+                        if (e.id == "cemu") Rise(4) {
+                            CemuControllerToggle(CemuControllerPrefs.LAUNCHER_KEY, Modifier.padding(top = 12.dp))
+                        }
                         Rise(4) { SectionTitle(stringResource(R.string.content_games), e.games.size.toString()) }
                         if (e.games.isEmpty()) Rise(5) {
                             Note(
@@ -400,6 +406,9 @@ private fun Content(
                                     PrimaryButton(stringResource(R.string.content_launch_in, e.name), enabled = !s.busy, main = true) { a.onRom(g) }
                                     if (s.busy) BusyChip(s) else ActionChip(g.hostPath.extension.uppercase().ifEmpty { stringResource(R.string.content_rom_folder) }, ok = false)
                                 }
+                                if (e.id == "cemu") {
+                                    CemuControllerToggle(CemuControllerPrefs.gameKey(g.hostPath), Modifier.padding(top = 12.dp))
+                                }
                             }
                             if (g.art != null && !narrow) Poster(g.art, g.name, Modifier.width(detailPosterWidth))
                         }
@@ -421,6 +430,34 @@ private fun Content(
             }
             else -> Note(stringResource(R.string.content_page_gone))
         }
+    }
+}
+
+@Composable
+private fun CemuControllerToggle(preferenceKey: String, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    var enabled by remember(preferenceKey) { mutableStateOf(CemuControllerPrefs.get(context, preferenceKey)) }
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier = modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(colors.surfaceVariant.copy(alpha = 0.55f))
+            .toggleable(value = enabled, role = Role.Switch, onValueChange = {
+                enabled = it
+                CemuControllerPrefs.set(context, preferenceKey, it)
+            })
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(R.string.cemu_pro_controller_title), fontWeight = FontWeight.SemiBold, color = colors.onSurface)
+            Text(
+                stringResource(if (enabled) R.string.cemu_pro_controller_pro else R.string.cemu_pro_controller_gamepad),
+                fontSize = 13.sp,
+                color = colors.onSurfaceVariant,
+            )
+        }
+        Switch(checked = enabled, onCheckedChange = null)
     }
 }
 
