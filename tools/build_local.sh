@@ -44,12 +44,16 @@ if ! command -v docker >/dev/null 2>&1; then
     echo "Docker is required to cross-compile the glibc ARM64 preload libraries." >&2
     exit 1
 fi
-for tool in curl tar zstd shasum unzip python3; do
+for tool in curl tar zstd shasum unzip python3 gawk; do
     if ! command -v "${tool}" >/dev/null 2>&1; then
         echo "${tool} is required to build the CI-equivalent APK." >&2
         exit 1
     fi
 done
+if ! awk 'BEGIN { exit (strtonum("0x10") == 16 ? 0 : 1) }'; then
+    echo "GNU awk must provide the awk command to build PRoot." >&2
+    exit 1
+fi
 if [[ -f "${repo_root}/tools/gamescope/release.env" \
         || -f "${repo_root}/tools/droiddeck-esync/release.env" ]] && ! command -v gh >/dev/null 2>&1; then
     echo "GitHub CLI is required to download the pinned Gamescope and droiddeck-esync release assets." >&2
